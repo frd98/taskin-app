@@ -99,6 +99,7 @@ export default function Home() {
     setIsLoading(true);
 
     try {
+      // Use the API route via the library function
       const aiReflection = await getStagedReflection(currentInput);
 
       setSessions(prev => prev.map(s => s.id === activeSessionId ? {
@@ -116,7 +117,13 @@ export default function Home() {
 
   // Prevent UI flash while checking auth
   if (isAuthLoading) {
-    return <div className="flex h-screen w-full items-center justify-center bg-white text-[10px] font-bold uppercase tracking-[0.3em] text-[#A78BFA] animate-pulse">Memverifikasi Identitas...</div>;
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-white">
+        <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#A78BFA] animate-pulse">
+          Memverifikasi Identitas...
+        </div>
+      </div>
+    );
   }
 
   return (
