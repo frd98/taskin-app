@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { getStagedReflection } from '@/lib/gemini';
+import ReactMarkdown from 'react-markdown'; // Added the translator
 
 export default function Home() {
   const supabase = createClient();
@@ -50,7 +51,7 @@ export default function Home() {
   return (
     <div className="flex flex-col md:flex-row h-screen w-full bg-white text-[#1E1B4B] overflow-hidden">
       
-      {/* MOBILE HEADER - Only shows on phones */}
+      {/* MOBILE HEADER */}
       <header className="md:hidden flex items-center justify-between p-4 border-b bg-white z-20">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-[#582CBE] rounded-lg flex items-center justify-center text-white font-bold">T</div>
@@ -61,7 +62,7 @@ export default function Home() {
         </button>
       </header>
 
-      {/* SIDEBAR - Fixed on Desktop, Overlay on Mobile */}
+      {/* SIDEBAR */}
       <aside className={`
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
         md:translate-x-0 fixed md:relative inset-y-0 left-0 w-64 bg-[#F9FAFB] border-r transition-transform duration-300 ease-in-out z-30 md:z-auto flex flex-col
@@ -84,10 +85,7 @@ export default function Home() {
         </div>
       </aside>
 
-      {/* BACKDROP - Click to close menu on mobile */}
-      {isSidebarOpen && (
-        <div className="fixed inset-0 bg-black/20 z-20 md:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
+      {isSidebarOpen && <div className="fixed inset-0 bg-black/20 z-20 md:hidden" onClick={() => setSidebarOpen(false)} />}
 
       {/* MAIN CONTENT */}
       <main className="flex-1 flex flex-col relative h-full overflow-hidden">
@@ -98,9 +96,7 @@ export default function Home() {
               <div className="space-y-8">
                 <h1 className="text-4xl md:text-5xl font-serif font-bold leading-tight">Assalamu’alaikum. Ada yang ingin dibahas?</h1>
                 <div className="bg-[#F9FAFB] rounded-3xl border p-4 shadow-sm">
-                  <textarea 
-                    value={input} 
-                    onChange={(e) => setInput(e.target.value)}
+                  <textarea value={input} onChange={(e) => setInput(e.target.value)}
                     placeholder="Tanyakan Taskin AI..."
                     className="w-full bg-transparent p-2 text-lg outline-none min-h-[120px] resize-none"
                   />
@@ -115,25 +111,26 @@ export default function Home() {
               <div className="space-y-10 pb-32">
                 {activeSession.messages.map((msg, i) => (
                   <div key={i} className={`flex gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[90%] p-4 rounded-2xl ${msg.role === 'user' ? 'bg-slate-100' : 'text-xl font-serif'}`}>
-                      {msg.content}
+                    <div className={`max-w-[90%] p-4 rounded-2xl ${msg.role === 'user' ? 'bg-slate-100' : 'text-[#1E1B4B]'}`}>
+                      {/* Using ReactMarkdown to render the AI's response */}
+                      <div className={`prose prose-slate max-w-none ${msg.role === 'assistant' ? 'font-serif text-lg leading-relaxed' : ''}`}>
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      </div>
                     </div>
                   </div>
                 ))}
+                {isLoading && <div className="animate-pulse text-[#582CBE]">Taskin sedang merenung...</div>}
               </div>
             )}
           </div>
         </div>
 
-        {/* STICKY INPUT (Mobile Footer) */}
+        {/* STICKY INPUT */}
         {!isInitialState && (
           <div className="absolute bottom-0 left-0 w-full p-4 md:p-10 bg-gradient-to-t from-white pt-10">
             <div className="max-w-2xl mx-auto bg-white border rounded-2xl p-2 shadow-xl flex items-center">
-              <input 
-                value={input} 
-                onChange={(e) => setInput(e.target.value)}
-                className="flex-1 p-3 outline-none" 
-                placeholder="Tulis pesan..."
+              <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                className="flex-1 p-3 outline-none" placeholder="Tulis pesan..."
               />
               <button onClick={handleSend} className="bg-[#582CBE] text-white p-3 rounded-xl">➤</button>
             </div>
