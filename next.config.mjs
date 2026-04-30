@@ -1,11 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // This allows production builds to successfully complete even if
-    // your project has ESLint or TypeScript errors.
+    // This is the "Bypass" for your MVP launch
     eslint: {
+      // This allows production builds to complete even if there are linting errors
       ignoreDuringBuilds: true,
     },
     typescript: {
+      // This allows production builds to complete even if there are type errors
       ignoreBuildErrors: true,
     },
   };
