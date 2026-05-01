@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // Feature: Toggle password visibility
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const router = useRouter();
@@ -24,7 +25,8 @@ export default function LoginPage() {
       setMessage(error.message);
     } else {
       if (type === 'SIGNUP') {
-        setMessage('Cek email Anda untuk konfirmasi (jika diaktifkan) atau silakan Login.');
+        // Change 1: Updated success copy
+        setMessage('Akun berhasil dibuat! Silakan klik "Masuk"'); 
       } else {
         router.push('/'); // Redirect to home after login
         router.refresh();
@@ -50,13 +52,30 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <input 
-            type="password" 
-            placeholder="Password" 
-            className="w-full bg-[#F9FAFB] border border-[#EDE9FE] rounded-2xl px-6 py-4 text-sm outline-none focus:border-[#582CBE] transition-all"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          
+          {/* Change 2: Password input with Eye Icon */}
+          <div className="relative">
+            <input 
+              type={showPassword ? 'text' : 'password'} 
+              placeholder="Password" 
+              className="w-full bg-[#F9FAFB] border border-[#EDE9FE] rounded-2xl px-6 py-4 text-sm outline-none focus:border-[#582CBE] transition-all pr-12"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#582CBE] transition-colors"
+            >
+              {showPassword ? (
+                /* Icon: Eye Off */
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+              ) : (
+                /* Icon: Eye */
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              )}
+            </button>
+          </div>
         </div>
 
         {message && <p className="text-[10px] text-center font-bold text-[#582CBE] uppercase">{message}</p>}

@@ -23,22 +23,15 @@ export default function RootLayout({
     <html lang="id">
       <body className={`${inter.variable} ${arabic.variable} font-sans antialiased`}>
         <div className="relative min-h-screen">
-          {/* Subtle Background Decoration */}
+          {/* We kept your subtle background glow! */}
           <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] rounded-full bg-brand-indigo/5 blur-[120px]" />
           
-          <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
-            <div className="container mx-auto flex h-16 items-center justify-between px-4">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-brand-indigo flex items-center justify-center">
-                  <span className="text-white font-bold">T</span>
-                </div>
-                <span className="text-xl font-bold tracking-tight text-slate-900">TASKIN</span>
-              </div>
-              <button className="btn-primary">Mulai</button>
-            </div>
-          </header>
-
-          <main className="container mx-auto px-4 py-8">
+          {/* 
+            Senior Engineer Note: The <header> and "Mulai" button have been removed.
+            This allows your Login and Dashboard pages to use their own layouts
+            without visual interference.
+          */}
+          <main>
             {children}
           </main>
         </div>
