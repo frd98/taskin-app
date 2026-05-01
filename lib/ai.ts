@@ -15,7 +15,7 @@ export async function getStagedReflection(prompt: string) {
     // 2. We are using Qwen 3.6-plus for more spiritual warmth
     // To test GPT-4o, you just change the model string below to "gpt-4o"
     const response = await aiClient.chat.completions.create({
-      model: "qwen-3.6-plus", 
+      model: "qwen3.6-plus", 
       messages: [
         { 
           role: "system", 
