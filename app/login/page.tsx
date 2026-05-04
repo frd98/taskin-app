@@ -2,16 +2,20 @@
 
 import React, { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Feature: Toggle password visibility
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams(); // To detect the ?message=pending URL
   const supabase = createClient();
+
+  // Check if the middleware sent the user here because they aren't approved yet
+  const isPendingApproval = searchParams.get('message') === 'pending';
 
   const handleAuth = async (type: 'LOGIN' | 'SIGNUP') => {
     setLoading(true);
@@ -25,10 +29,9 @@ export default function LoginPage() {
       setMessage(error.message);
     } else {
       if (type === 'SIGNUP') {
-        // Change 1: Updated success copy
-        setMessage('Akun berhasil dibuat! Silakan klik "Masuk"'); 
+        setMessage('Akun berhasil dibuat! Silakan tunggu persetujuan admin.'); 
       } else {
-        router.push('/'); // Redirect to home after login
+        router.push('/'); 
         router.refresh();
       }
     }
@@ -38,11 +41,22 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAFAFB] p-4">
       <div className="w-full max-w-md bg-white rounded-[2.5rem] shadow-xl border border-[#EDE9FE] p-10 space-y-8">
+        
         <div className="text-center space-y-2">
           <div className="w-12 h-12 bg-[#582CBE] rounded-[15px] flex items-center justify-center text-white font-bold text-xl shadow-lg mx-auto mb-6">T</div>
           <h1 className="font-serif font-bold text-3xl text-[#1E1B4B]">Selamat Datang</h1>
           <p className="text-xs text-[#A78BFA] font-bold uppercase tracking-widest">Perjalanan Hikmah Anda Dimulai di Sini</p>
         </div>
+
+        {/* PENDING APPROVAL ALERT: Only shows when ?message=pending is in URL */}
+        {isPendingApproval && (
+          <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 animate-pulse">
+            <p className="text-[10px] text-center font-bold text-indigo-600 uppercase tracking-widest leading-relaxed">
+              Akun Anda sedang dalam antrean peninjauan. <br /> 
+              Mohon tunggu hingga Admin memberikan akses.
+            </p>
+          </div>
+        )}
 
         <div className="space-y-4">
           <input 
@@ -53,7 +67,6 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
           />
           
-          {/* Change 2: Password input with Eye Icon */}
           <div className="relative">
             <input 
               type={showPassword ? 'text' : 'password'} 
@@ -68,10 +81,8 @@ export default function LoginPage() {
               className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#582CBE] transition-colors"
             >
               {showPassword ? (
-                /* Icon: Eye Off */
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
               ) : (
-                /* Icon: Eye */
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
               )}
             </button>
