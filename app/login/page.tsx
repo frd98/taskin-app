@@ -1,20 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function LoginPage() {
+// 1. We move the actual logic and UI into this internal component
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const router = useRouter();
-  const searchParams = useSearchParams(); // To detect the ?message=pending URL
+  const searchParams = useSearchParams();
   const supabase = createClient();
 
-  // Check if the middleware sent the user here because they aren't approved yet
+  // Detect if the middleware sent the user here for approval
   const isPendingApproval = searchParams.get('message') === 'pending';
 
   const handleAuth = async (type: 'LOGIN' | 'SIGNUP') => {
@@ -48,7 +49,6 @@ export default function LoginPage() {
           <p className="text-xs text-[#A78BFA] font-bold uppercase tracking-widest">Perjalanan Hikmah Anda Dimulai di Sini</p>
         </div>
 
-        {/* PENDING APPROVAL ALERT: Only shows when ?message=pending is in URL */}
         {isPendingApproval && (
           <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 animate-pulse">
             <p className="text-[10px] text-center font-bold text-indigo-600 uppercase tracking-widest leading-relaxed">
@@ -109,5 +109,18 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// 2. The main page component wraps the form in a Suspense boundary to fix the build error
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFB] p-4 text-[#A78BFA] font-bold animate-pulse">
+        Menyiapkan...
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
